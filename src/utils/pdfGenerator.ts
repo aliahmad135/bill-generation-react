@@ -100,7 +100,6 @@ export const generateBillPDF = async (billData: BillData): Promise<void> => {
       <div style="font-size: 12px;"><strong>House Number:</strong> ${
         billData.houseNumber
       }</div>
-      <div style="font-size: 12px;"><strong>Bill Period:</strong> ${billPeriod}</div>
     </div>
     
     <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
