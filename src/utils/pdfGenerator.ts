@@ -33,7 +33,7 @@ export const generateBillPDF = async (billData: BillData): Promise<void> => {
   // Create a temporary div to render the bill HTML
   const billElement = document.createElement("div");
   billElement.style.width = "210mm";
-  billElement.style.padding = "10mm";
+  billElement.style.padding = "5mm";
   billElement.style.backgroundColor = "white";
   billElement.style.fontFamily = "Arial, sans-serif";
 
@@ -74,132 +74,144 @@ export const generateBillPDF = async (billData: BillData): Promise<void> => {
     3
   )}-${year} To ${lastDay.getDate()}-${monthName.substring(0, 3)}-${year}`;
 
-  // Generate bill HTML
-  billElement.innerHTML = `
-    <div style="text-align: center; margin-bottom: 10px; font-weight: bold; font-size: 14px;">
-      Maqbool Garden Housing Society
-    </div>
-    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-      <div>
-        <table style="border-collapse: collapse; font-size: 12px;">
-          <tr>
-            <td style="border: 1px solid #000; padding: 5px; white-space: nowrap;">Date of issue:</td>
-            <td style="border: 1px solid #000; padding: 5px; min-width: 80px;">${issueDate}</td>
-            <td style="border: 1px solid #000; padding: 5px; white-space: nowrap;">Due Date:</td>
-            <td style="border: 1px solid #000; padding: 5px; min-width: 80px;">${formatDate(
-              billData.dueDate
-            )}</td>
-          </tr>
-        </table>
+  // Function to generate a single bill HTML
+  const generateSingleBillHTML = () => `
+    <div style="border: 2px solid #000; padding: 8px; margin-bottom: 10px; position: relative;">
+      <!-- Logo at the top -->
+      <div style="text-align: center; margin-bottom: 8px;">
+        <img src='/maqbool-garden.jpeg' alt='Maqbool Garden Logo' style='height: 60px; margin-bottom: 4px;' />
       </div>
-    </div>    
-    <div style="margin-bottom: 10px;">
-      <div style="font-size: 12px;"><strong>Name:</strong> ${
-        billData.residentName
-      }</div>
-      <div style="font-size: 12px;"><strong>House Number:</strong> ${
-        billData.houseNumber
-      }</div>
-    </div>
-    
-    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-      <div style="width: 48%;">
-        <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
-          <tr style="background-color: #f2f2f2;">
-            <th style="border: 1px solid #000; padding: 5px; text-align: left;">Bill Payment History</th>
-          </tr>
-          <tr>
-            <td style="border: 1px solid #000; padding: 5px;">
-              <table style="width: 100%; border-collapse: collapse;">
-                <tr>
-                  <th style="border-bottom: 1px solid #000; padding: 3px; text-align: left; width: 40%;">Billing Month</th>
-                  <th style="border-bottom: 1px solid #000; padding: 3px; text-align: right; width: 30%;">Bill Amount</th>
-                  <th style="border-bottom: 1px solid #000; padding: 3px; text-align: right; width: 30%;">Received Amount</th>
-                </tr>
-                ${billData?.billHistory
-                  ?.map(
-                    (row) => `
-                      <tr>
-                        <td style="padding: 3px; text-align: left;">${
-                          row.billingMonth
-                        }</td>
-                        <td style="padding: 3px; text-align: right;">${row.amount.toLocaleString()}</td>
-                        <td style="padding: 3px; text-align: right;">${row.receivedAmount.toLocaleString()}</td>
-                      </tr>
-                    `
-                  )
-                  .join("")}
-              </table>
-            </td>
-          </tr>
-        </table>
+      <div style="text-align: center; margin-bottom: 8px; font-weight: bold; font-size: 12px;">
+        Maqbool Garden Housing Society
       </div>
-      
-      <div style="width: 48%;">
-        <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
-          <tr>
-            <td style="border: 1px solid #000; padding: 5px; background-color: #f2f2f2;">Arrears:</td>
-            <td style="border: 1px solid #000; padding: 5px; text-align: right;">Rs.</td>
-            <td style="border: 1px solid #000; padding: 5px; text-align: right;">0</td>
-          </tr>
-          <tr>
-            <td style="border: 1px solid #000; padding: 5px; background-color: #f2f2f2;">MASJID FUND</td>
-            <td style="border: 1px solid #000; padding: 5px; text-align: right;">Rs.</td>
-            <td style="border: 1px solid #000; padding: 5px; text-align: right;">${
-              billData.masjidFund?.toLocaleString() ?? 0
-            }</td>
-          </tr>
-          <tr>
-            <td style="border: 1px solid #000; padding: 5px; background-color: #f2f2f2;">GUARD SERVICE</td>
-            <td style="border: 1px solid #000; padding: 5px; text-align: right;">Rs.</td>
-            <td style="border: 1px solid #000; padding: 5px; text-align: right;">${
-              billData.guardService?.toLocaleString() ?? 0
-            }</td>
-          </tr>
-          <tr>
-            <td style="border: 1px solid #000; padding: 5px; background-color: #f2f2f2;">STREET LIGHTING</td>
-            <td style="border: 1px solid #000; padding: 5px; text-align: right;">Rs.</td>
-            <td style="border: 1px solid #000; padding: 5px; text-align: right;">${
-              billData.streetLighting?.toLocaleString() ?? 0
-            }</td>
-          </tr>
-          <tr>
-            <td style="border: 1px solid #000; padding: 5px; background-color: #f2f2f2;">GARDENER</td>
-            <td style="border: 1px solid #000; padding: 5px; text-align: right;">Rs.</td>
-            <td style="border: 1px solid #000; padding: 5px; text-align: right;">${
-              billData.gardener?.toLocaleString() ?? 0
-            }</td>
-          </tr>
-          ${
-            billData.fineAmount
-              ? `
-          <tr>
-            <td style="border: 1px solid #000; padding: 5px; background-color: #f2f2f2;">FINE</td>
-            <td style="border: 1px solid #000; padding: 5px; text-align: right;">Rs.</td>
-            <td style="border: 1px solid #000; padding: 5px; text-align: right;">${billData.fineAmount.toLocaleString()}</td>
-          </tr>
-          `
-              : ""
-          }
-          <tr>
-            <td style="border: 1px solid #000; padding: 5px; background-color: #f2f2f2; font-weight: bold;">Total Payable:</td>
-            <td style="border: 1px solid #000; padding: 5px; text-align: right;">Rs.</td>
-            <td style="border: 1px solid #000; padding: 5px; text-align: right; font-weight: bold;">${totalAmount.toLocaleString()}</td>
-          </tr>
-        </table>
+      <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+        <div>
+          <table style="border-collapse: collapse; font-size: 10px;">
+            <tr>
+              <td style="border: 1px solid #000; padding: 3px; white-space: nowrap;">Date of issue:</td>
+              <td style="border: 1px solid #000; padding: 3px; min-width: 60px;">${issueDate}</td>
+              <td style="border: 1px solid #000; padding: 3px; white-space: nowrap;">Due Date:</td>
+              <td style="border: 1px solid #000; padding: 3px; min-width: 60px;">${formatDate(
+                billData.dueDate
+              )}</td>
+            </tr>
+          </table>
+        </div>
+      </div>    
+      <div style="margin-bottom: 8px;">
+        <div style="font-size: 10px;"><strong>Name:</strong> ${
+          billData.residentName
+        }</div>
+        <div style="font-size: 10px;"><strong>House Number:</strong> ${
+          billData.houseNumber
+        }</div>
+      </div>
+      <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+        <div style="width: 48%;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 10px;">
+            <tr style="background-color: #f2f2f2;">
+              <th style="border: 1px solid #000; padding: 3px; text-align: left;">Bill Payment History</th>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #000; padding: 3px;">
+                <table style="width: 100%; border-collapse: collapse;">
+                  <tr>
+                    <th style="border-bottom: 1px solid #000; padding: 2px; text-align: left; width: 40%;">Billing Month</th>
+                    <th style="border-bottom: 1px solid #000; padding: 2px; text-align: right; width: 30%;">Bill Amount</th>
+                    <th style="border-bottom: 1px solid #000; padding: 2px; text-align: right; width: 30%;">Received Amount</th>
+                  </tr>
+                  ${billData?.billHistory
+                    ?.map(
+                      (row) => `
+                        <tr>
+                          <td style="padding: 2px; text-align: left;">${
+                            row.billingMonth
+                          }</td>
+                          <td style="padding: 2px; text-align: right;">${row.amount.toLocaleString()}</td>
+                          <td style="padding: 2px; text-align: right;">${row.receivedAmount.toLocaleString()}</td>
+                        </tr>
+                      `
+                    )
+                    .join("")}
+                </table>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <div style="width: 48%;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 10px;">
+            <tr>
+              <td style="border: 1px solid #000; padding: 3px; background-color: #f2f2f2;">Arrears:</td>
+              <td style="border: 1px solid #000; padding: 3px; text-align: right;">Rs.</td>
+              <td style="border: 1px solid #000; padding: 3px; text-align: right;">0</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #000; padding: 3px; background-color: #f2f2f2;">MASJID FUND</td>
+              <td style="border: 1px solid #000; padding: 3px; text-align: right;">Rs.</td>
+              <td style="border: 1px solid #000; padding: 3px; text-align: right;">${
+                billData.masjidFund?.toLocaleString() ?? 0
+              }</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #000; padding: 3px; background-color: #f2f2f2;">GUARD SERVICE</td>
+              <td style="border: 1px solid #000; padding: 3px; text-align: right;">Rs.</td>
+              <td style="border: 1px solid #000; padding: 3px; text-align: right;">${
+                billData.guardService?.toLocaleString() ?? 0
+              }</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #000; padding: 3px; background-color: #f2f2f2;">STREET LIGHTING</td>
+              <td style="border: 1px solid #000; padding: 3px; text-align: right;">Rs.</td>
+              <td style="border: 1px solid #000; padding: 3px; text-align: right;">${
+                billData.streetLighting?.toLocaleString() ?? 0
+              }</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #000; padding: 3px; background-color: #f2f2f2;">GARDENER</td>
+              <td style="border: 1px solid #000; padding: 3px; text-align: right;">Rs.</td>
+              <td style="border: 1px solid #000; padding: 3px; text-align: right;">${
+                billData.gardener?.toLocaleString() ?? 0
+              }</td>
+            </tr>
+            ${
+              billData.fineAmount
+                ? `
+            <tr>
+              <td style="border: 1px solid #000; padding: 3px; background-color: #f2f2f2;">FINE</td>
+              <td style="border: 1px solid #000; padding: 3px; text-align: right;">Rs.</td>
+              <td style="border: 1px solid #000; padding: 3px; text-align: right;">${billData.fineAmount.toLocaleString()}</td>
+            </tr>
+            `
+                : ""
+            }
+            <tr>
+              <td style="border: 1px solid #000; padding: 3px; background-color: #f2f2f2; font-weight: bold;">Total Payable:</td>
+              <td style="border: 1px solid #000; padding: 3px; text-align: right;">Rs.</td>
+              <td style="border: 1px solid #000; padding: 3px; text-align: right; font-weight: bold;">${totalAmount.toLocaleString()}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <div style="font-size: 8px; margin-bottom: 15px;">
+        This is computer generated document as such requires no signature.<br>
+        Errors and omissions excepted.
+      </div>
+      <div style="text-align: center; font-weight: bold; font-size: 10px; margin-bottom: 8px;">
+        Complaint Timings from 9 AM to 4 PM
       </div>
     </div>
-    
-    <div style="font-size: 10px; margin-bottom: 20px;">
-      This is computer generated document as such requires no signature.<br>
-      Errors and omissions excepted.
-    </div>
-    
-    <div style="text-align: center; font-weight: bold; font-size: 12px; margin-bottom: 10px;">
-      Complaint Timings from 9 AM to 4 PM
-    </div>
-    
+  `;
 
+  // Generate the complete HTML with two bills side by side
+  billElement.innerHTML = `
+    <div style="display: flex; justify-content: space-between; gap: 10px;">
+      <div style="width: 48%;">
+        ${generateSingleBillHTML()}
+      </div>
+      <div style="width: 48%;">
+        ${generateSingleBillHTML()}
+      </div>
+    </div>
   `;
 
   // Add the element to the DOM temporarily

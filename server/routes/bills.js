@@ -40,7 +40,7 @@ router.post("/", async (req, res) => {
     // Parse house size
     const [sizeValue, sizeUnit] = house.houseSize.split(" ");
     const marlas =
-      sizeUnit === "kanal" ? parseInt(sizeValue) * 20 : parseInt(sizeValue);
+      sizeUnit === "kanal" ? parseFloat(sizeValue) * 20 : parseFloat(sizeValue);
 
     // Calculate charges
     const serviceCharge = marlas * 25;

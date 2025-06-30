@@ -225,9 +225,15 @@ const HouseRegistration: React.FC = () => {
                 }`}
               >
                 <option value="">Select Size</option>
+                <option value="3 Marla">3 Marla</option>
+                <option value="4 Marla">4 Marla</option>
                 <option value="5 Marla">5 Marla</option>
                 <option value="7 Marla">7 Marla</option>
+                <option value="7.6 Marla">7.6 Marla</option>
+                <option value="8 Marla">8 Marla</option>
                 <option value="10 Marla">10 Marla</option>
+                <option value="12 Marla">12 Marla</option>
+                <option value="12.75 Marla">12.75 Marla</option>
                 <option value="1 Kanal">1 Kanal</option>
                 <option value="2 Kanal">2 Kanal</option>
               </select>

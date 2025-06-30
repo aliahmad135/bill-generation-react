@@ -74,7 +74,7 @@ const BillManagement: React.FC = () => {
   const calculateTotal = (houseSize: string) => {
     const [sizeValue, sizeUnit] = houseSize.split(" ");
     const marlas =
-      sizeUnit === "kanal" ? parseInt(sizeValue) * 20 : parseInt(sizeValue);
+      sizeUnit === "kanal" ? parseFloat(sizeValue) * 20 : parseFloat(sizeValue);
     return (marlas * 100).toLocaleString();
   };
 
